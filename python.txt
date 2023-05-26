@@ -1,0 +1,104 @@
+import tkinter as tk
+import matplotlib.pyplot as plt
+
+import random
+from PIL import Image, ImageDraw, ImageTk
+
+root = tk.Tk()
+width, height = 400, 400
+gradient = Image.new('RGB', (width, height), color=(255, 255, 255))
+draw = ImageDraw.Draw(gradient)
+draw.rectangle((0, 0, width, height), fill=(48, 239, 86), outline=None)
+draw.rectangle((0, 0, width, height // 2), fill=(79, 236, 110), outline=None)
+# Save the gradient image to a file
+gradient.save('gradient.png')
+# Define the data
+user_labels = ['User1', 'User2', 'User3', 'User4', 'User5']
+app_labels = ['Flipkart', 'Facebook', 'Reddit', 'Instagram', 'Spotify', 'Youtube', 'Outlook', 'Teams', 'Whatsapp']
+# Define colors for the bars
+user_colors = ['red', 'green', 'blue', 'orange', 'purple']
+app_colors = ['cyan', 'magenta', 'blue', 'green', 'red', 'orange', 'purple']
+# Assign total bandwidth across all users
+total_bandwidth = 500
+user_bandwidths = [random.randint(0, total_bandwidth) for _ in range(len(user_labels))]
+user_bandwidths[random.randint(0, len(user_bandwidths) - 1)] = 0  # Set one user to be offline
+
+app_bandwidths = []
+
+
+def define():
+    for i in app_labels:
+        app_bandwidths.append(random.uniform(0, 0.5))
+
+
+define()
+
+
+def create_user_graph():
+    # Create the graph
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.bar(user_labels, user_bandwidths, color=user_colors)
+    ax.set_title('User Bandwidth Usage')
+    ax.set_xlabel('User')
+    ax.set_ylabel('Bandwidth Usage (MB)')
+
+    ax.set_facecolor((1.0, 0.9, 0.9))  # Set the background color of the plot
+
+    plt.show()
+
+    user_bandwidth = dict(zip(user_labels, user_bandwidths))
+    for user, bandwidth in user_bandwidth.items():
+        if bandwidth > 0:
+            print(f"{user} is online with {bandwidth} bandwidth usage")
+        else:
+            print(f"{user} is offline with {bandwidth} bandwidth usage")
+
+
+def increment_bandwidth():
+    for i, bandwidth in enumerate(user_bandwidths):
+        if bandwidth > 0:
+            user_bandwidths[i] += 5 * bandwidth
+    print(f"{user_labels[i]} bandwidth usage after incrementing:{user_bandwidths[i]}")
+
+
+increment_bandwidth()
+
+
+def create_app_graph():
+    fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(14, 5))
+    fig.canvas.manager.window.geometry("+100+100")  # Set the initial position of the window
+
+    # Bar chart
+    ax1.bar(app_labels, app_bandwidths, color=app_colors)
+    ax1.set_title('App Bandwidth Usage (Bar Chart)')
+    ax1.set_xlabel('App')
+    ax1.set_ylabel('Bandwidth Usage (MB)')
+    ax1.set_facecolor('pink')
+
+    # Pie plot
+    ax2.pie(app_bandwidths, labels=app_labels, colors=app_colors, autopct='%1.1f%%')
+    ax2.set_title('App Bandwidth Usage (Pie Plot)')
+    plt.tight_layout()
+    plt.show()
+
+
+def create_gui():
+    root.title('Bandwidth Usage')
+    root.geometry("920x300")
+
+    image = Image.open(r"C:\Users\hogri\OneDrive\Desktop\bgimage.jpg")
+    background_image = ImageTk.PhotoImage(image)
+
+    background_label = tk.Label(root, image=background_image)
+    background_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+    tk.Button(root, text='User Bandwidth', bg='pink', command=create_user_graph, padx=50).grid(row=0, column=0)
+
+    tk.Button(root, text='App  Bandwidth', bg='purple', command=create_app_graph, padx=50).grid(row=2, column=0)
+
+    root.iconbitmap(r"C:\Users\hogri\OneDrive\Desktop\bgimage.jpg")
+
+    root.mainloop()
+
+
+create_gui()
